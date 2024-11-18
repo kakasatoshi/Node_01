@@ -17,7 +17,7 @@ const movieRoutes = require("./routes/movie");
 // const userRoutes = require("./routes/user");
 // const genreRoutes = require("./routes/genre");
 
-app.use("api/movies", movieRoutes);
+app.use("/api/movie", movieRoutes);
 // app.get("/", (req, res) => {
 //   res.send("Hello from Node.js Backend!");
 // });
