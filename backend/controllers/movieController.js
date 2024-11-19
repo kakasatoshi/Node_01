@@ -1,4 +1,6 @@
 const Movies = require("../Models/Movies");
+const Genres = require("../Models/Genre");
+const Videos = require("../Models/Videos"); // Danh sách thể loại phim // Danh sách thể loại phim
 exports.getTrending = (req, res, next) => {
   const { page = 1 } = req.query; // Lấy tham số `page` từ request (mặc định là 1)
   const moviesPerPage = 20; // Số phim mỗi trang
@@ -25,8 +27,6 @@ exports.getTrending = (req, res, next) => {
     total_pages: totalPages,
   });
 };
-
-const Genres = require("../Models/Genre"); // Danh sách thể loại phim
 
 exports.discoverMoviesByGenre = (req, res, next) => {
   const { genre, page = 1 } = req.query; // Lấy `genre` và `page` từ request query
@@ -73,4 +73,43 @@ exports.discoverMoviesByGenre = (req, res, next) => {
   } catch (error) {
     next(error); // Xử lý lỗi
   }
+};
+
+exports.getMovieTrailer = (req, res) => {
+  const { film_id } = req.query; // Lấy film_id từ route parameter
+  // const { film_id } = req.params;
+
+  console.log(req, "film_id,req");
+
+  // Kiểm tra nếu không có `film_id`
+  if (!film_id) {
+    return res.status(400).json({ message: "Not found film_id parram" });
+  }
+
+  // Tìm phim theo `film_id`
+  const film = Videos.all().find((movie) => movie.id === Number(film_id));
+  if (!film) {
+    return res.status(404).json({ message: "Not found video" });
+  }
+
+  // Lọc các video thỏa mãn điều kiện
+  const eligibleVideos = film.videos.filter(
+    (video) =>
+      video.official === true &&
+      video.site === "YouTube" &&
+      (video.type === "Trailer" || video.type === "Teaser")
+  );
+
+  // Nếu không có video phù hợp, trả về lỗi 404
+  if (eligibleVideos.length === 0) {
+    return res.status(404).json({ message: "Not found video" });
+  }
+
+  // Sắp xếp video theo thời gian `published_at` (mới nhất trước)
+  eligibleVideos.sort(
+    (a, b) => new Date(b.published_at) - new Date(a.published_at)
+  );
+
+  // Trả về video phù hợp nhất
+  res.status(200).json(eligibleVideos[0]);
 };
