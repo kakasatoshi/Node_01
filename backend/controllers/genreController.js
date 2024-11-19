@@ -5,7 +5,9 @@
 const Genre = require("../Models/Genre");
 
 exports.getGenres = (req, res, next) => {
-  Genre.fetchAll((genre) => {
-    res.json(genre);
-  });
+  // Genre.all((genre) => {
+  //   res.json(genre);
+  // });
+  res.json(Genre.all());
+  // Genre.all();
 };

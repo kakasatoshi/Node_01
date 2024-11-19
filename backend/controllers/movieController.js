@@ -26,22 +26,51 @@ exports.getTrending = (req, res, next) => {
   });
 };
 
+const Genres = require("../Models/Genre"); // Danh sách thể loại phim
 
+exports.discoverMoviesByGenre = (req, res, next) => {
+  const { genre, page = 1 } = req.query; // Lấy `genre` và `page` từ request query
 
-// Import module chứa dữ liệu (Movies)
-// const Movies = require("../Data/Movies");
+  try {
+    // Kiểm tra đầu vào
+    if (!genre || isNaN(genre)) {
+      return res.status(400).json({ message: "Invalid or missing genre ID" });
+    }
 
-// // Hàm tìm các phim có `genre_ids` chứa giá trị `y`
-function findMoviesByGenre(y) {
-    // Lấy toàn bộ danh sách phim
+    const genreId = Number(genre);
+    const currentPage = Math.max(1, Number(page));
+    const moviesPerPage = 20;
+
+    // Lấy danh sách phim và thể loại
     const movies = Movies.all();
+    const genreObj = Genres.all().find((g) => g.id === genreId);
 
-    // Lọc các phim có chứa `genre_id = y`
-    const filteredMovies = movies.filter(movie => movie.genre_ids.includes(y));
+    if (!genreObj) {
+      return res.status(404).json({ message: "Genre not found" });
+    }
 
-    return filteredMovies;
-}
+    // Lọc phim theo thể loại
+    const filteredMovies = movies.filter((movie) =>
+      movie.genre_ids?.includes(genreId)
+    );
 
-// Ví dụ: Tìm các phim thuộc thể loại `genre_id = 28` (Action)
-const actionMovies = findMoviesByGenre(28);
-console.log(actionMovies);
+    // Tính tổng số trang và lấy phim của trang hiện tại
+    const totalMovies = filteredMovies.length;
+    const totalPages = Math.ceil(totalMovies / moviesPerPage);
+    const startIndex = (currentPage - 1) * moviesPerPage;
+    const results = filteredMovies.slice(
+      startIndex,
+      startIndex + moviesPerPage
+    );
+
+    // Trả về response
+    res.status(200).json({
+      results,
+      page: currentPage,
+      total_pages: totalPages,
+      genre_name: genreObj.name,
+    });
+  } catch (error) {
+    next(error); // Xử lý lỗi
+  }
+};

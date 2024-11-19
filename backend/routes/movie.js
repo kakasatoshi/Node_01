@@ -9,5 +9,7 @@ const router = express.Router();
 
 router.get("/genre", genreController.getGenres);
 router.get("/trending", movieController.getTrending);
+router.get("/discover", movieController.discoverMoviesByGenre);
 
+module.exports = router;
 module.exports = router;
