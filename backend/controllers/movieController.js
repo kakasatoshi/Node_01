@@ -26,20 +26,22 @@ exports.getTrending = (req, res, next) => {
   });
 };
 
+
+
 // Import module chứa dữ liệu (Movies)
 // const Movies = require("../Data/Movies");
 
 // // Hàm tìm các phim có `genre_ids` chứa giá trị `y`
-// function findMoviesByGenre(y) {
-//     // Lấy toàn bộ danh sách phim
-//     const movies = Movies.all();
+function findMoviesByGenre(y) {
+    // Lấy toàn bộ danh sách phim
+    const movies = Movies.all();
 
-//     // Lọc các phim có chứa `genre_id = y`
-//     const filteredMovies = movies.filter(movie => movie.genre_ids.includes(y));
+    // Lọc các phim có chứa `genre_id = y`
+    const filteredMovies = movies.filter(movie => movie.genre_ids.includes(y));
 
-//     return filteredMovies;
-// }
+    return filteredMovies;
+}
 
-// // Ví dụ: Tìm các phim thuộc thể loại `genre_id = 28` (Action)
-// const actionMovies = findMoviesByGenre(28);
-// console.log(actionMovies);
+// Ví dụ: Tìm các phim thuộc thể loại `genre_id = 28` (Action)
+const actionMovies = findMoviesByGenre(28);
+console.log(actionMovies);
