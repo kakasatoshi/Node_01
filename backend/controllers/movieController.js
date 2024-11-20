@@ -75,7 +75,7 @@ exports.discoverMoviesByGenre = (req, res, next) => {
   }
 };
 
-exports.getMovieTrailer = (req, res) => {
+exports.getMovieTrailer = (req, res, next) => {
   const { film_id } = req.query; // Lấy film_id từ route parameter
   // const { film_id } = req.params;
 
@@ -112,4 +112,40 @@ exports.getMovieTrailer = (req, res) => {
 
   // Trả về video phù hợp nhất
   res.status(200).json(eligibleVideos[0]);
+};
+
+exports.searchMovies = (req, res, next) => {
+  const { keyword, page = 1, limit = 10 } = req.body;
+
+  // Kiểm tra nếu không có `keyword`
+  if (!keyword) {
+    return res.status(400).json({ message: "Not found keyword parram" });
+  }
+
+  // Tìm kiếm nội dung thỏa mãn
+  const lowerKeyword = keyword.toLowerCase();
+  const filteredContent = Movies.all().filter((content) => {
+    const titleOrName =
+      content.media_type === "movie" ? content.title : content.name;
+
+    return (
+      titleOrName.toLowerCase().includes(lowerKeyword) ||
+      content.overview.toLowerCase().includes(lowerKeyword)
+    );
+  });
+
+  // Phân trang
+  const startIndex = (page - 1) * limit;
+  const paginatedContent = filteredContent.slice(
+    startIndex,
+    startIndex + limit
+  );
+
+  // Trả về kết quả
+  res.status(200).json({
+    page: Number(page),
+    totalResults: filteredContent.length,
+    totalPages: Math.ceil(filteredContent.length / limit),
+    results: paginatedContent,
+  });
 };

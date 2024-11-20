@@ -9,7 +9,7 @@ const fs = require("fs");
 const path = require("path");
 
 // Đường dẫn tới file movieList.json
-const DATA_PATH = path.join(__dirname, "../data/userList.json");
+const DATA_PATH = path.join(__dirname, "../Data/userToken.json");
 
 const Users = {
   all: function () {
