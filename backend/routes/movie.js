@@ -15,4 +15,6 @@ router.post("/video", movieController.getMovieTrailer); //http://localhost:5000/
 router.get("/video", movieController.getMovieTrailer);
 router.post("/search", movieController.searchMovies); //http://localhost:5000/api/movie/search body {   "keyword": "top",    "page": 1,    "limit": 5}
 
+
+
 module.exports = router;
