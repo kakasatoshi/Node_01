@@ -149,3 +149,94 @@ exports.searchMovies = (req, res, next) => {
     results: paginatedContent,
   });
 };
+
+exports.getTopRatedMovies = (req, res, next) => {
+  const page = parseInt(req.query.page) || 1; // Mặc định page = 1
+  const itemsPerPage = 10; // Số lượng phim mỗi trang
+
+  // Lấy toàn bộ danh sách phim
+  const allMovies = Movies.all();
+
+  // Sắp xếp phim theo `vote_average` giảm dần
+  const sortedMovies = allMovies.sort(
+    (a, b) => b.vote_average - a.vote_average
+  );
+
+  // Lấy các phim thuộc trang hiện tại
+  const startIndex = (page - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const moviesForPage = sortedMovies.slice(startIndex, endIndex);
+
+  // Kiểm tra nếu không có dữ liệu
+  if (moviesForPage.length === 0) {
+    return res.status(404).json({
+      message: "No movies found for the given page.",
+    });
+  }
+
+  // Trả về kết quả
+  res.status(200).json({
+    page: page,
+    results: moviesForPage,
+    total_results: sortedMovies.length,
+    total_pages: Math.ceil(sortedMovies.length / itemsPerPage),
+  });
+};
+
+exports.advancedSearch = (req, res, next) => {
+  const { keyword, genre, mediaType, language, year } = req.body;
+
+  // Kiểm tra keyword (bắt buộc)
+  if (!keyword || keyword.trim() === "") {
+      return res.status(400).json({ message: "Not found keyword param" });
+  }
+
+  // Lấy toàn bộ danh sách phim
+  const allMovies = Movies.all();
+
+  // Tìm kiếm theo keyword (title hoặc overview, không phân biệt hoa thường)
+  let filteredMovies = allMovies.filter(
+      (movie) =>
+          movie.title.toLowerCase().includes(keyword.toLowerCase()) ||
+          (movie.overview && movie.overview.toLowerCase().includes(keyword.toLowerCase()))
+  );
+
+  // Lọc theo genre (nếu có)
+  if (genre) {
+      filteredMovies = filteredMovies.filter(
+          (movie) => movie.genre_ids && movie.genre_ids.includes(Number(genre))
+      );
+  }
+
+  // Lọc theo mediaType (nếu có)
+  if (mediaType && mediaType !== "all") {
+      filteredMovies = filteredMovies.filter(
+          (movie) => movie.media_type && movie.media_type === mediaType
+      );
+  }
+
+  // Lọc theo language (nếu có)
+  if (language) {
+      filteredMovies = filteredMovies.filter(
+          (movie) => movie.original_language && movie.original_language === language
+      );
+  }
+
+  // Lọc theo năm phát hành (nếu có)
+  if (year) {
+      filteredMovies = filteredMovies.filter((movie) =>
+          movie.release_date ? movie.release_date.startsWith(year.toString()) : false
+      );
+  }
+
+  // Kiểm tra nếu không có kết quả
+  if (filteredMovies.length === 0) {
+      return res.status(404).json({ message: "No movies found with the given filters." });
+  }
+
+  // Trả về kết quả
+  res.status(200).json({
+      results: filteredMovies,
+      total_results: filteredMovies.length,
+  });
+};

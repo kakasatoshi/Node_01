@@ -4,14 +4,14 @@ const requests = {
   // fetchTrending: `/trending/all/week?api_key=${API_KEY}&language=en-US`,
   fetchTrending: `/trending`,
 
-  fetchNetflixOriginals: `/discover/tv?api_key=${API_KEY}&with_network=123`,
-  fetchTopRated: `/movie/top_rated?api_key=${API_KEY}&language=en-US`,
-  fetchActionMovies: `/discover/movie?api_key=${API_KEY}&with_genres=28`,
-  fetchComedyMovies: `/discover/movie?api_key=${API_KEY}&with_genres=35`,
-  fetchHorrorMovies: `/discover/movie?api_key=${API_KEY}&with_genres=27`,
-  fetchRomanceMovies: `/discover/movie?api_key=${API_KEY}&with_genres=10749`,
-  fetchDocumentaries: `/discover/movie?api_key=${API_KEY}&with_genres=99`,
-  fetchSearch: `/search/movie?api_key=${API_KEY}&language=en-US`,
+  fetchNetflixOriginals: `/top-rate`,
+  fetchTopRated: `/top-rate`,
+  fetchActionMovies: `/discover?genre=28&page=1`,
+  fetchComedyMovies: `/discover?genre=35&page=1`,
+  fetchHorrorMovies: `/discover?genre=27&page=1`,
+  fetchRomanceMovies: `/discover?genre=10749&page=1`,
+  fetchDocumentaries: `/discover?genre=99&page=1`,
+  fetchSearch: `/search`,
 };
 
 export default requests;
