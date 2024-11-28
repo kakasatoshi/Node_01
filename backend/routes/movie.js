@@ -18,5 +18,6 @@ router.get("/top-rate", movieController.getTopRatedMovies);
 router.post("/search", movieController.searchMovies); //http://localhost:5000/api/movie/search body {   "keyword": "top",    "page": 1,    "limit": 5}
 
 router.get("/search-advanced", movieController.advancedSearch);
+// router.get("/search-advanced", authenticate, movieController.advancedSearch);
 
 module.exports = router;

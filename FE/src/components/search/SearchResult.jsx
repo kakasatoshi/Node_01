@@ -9,12 +9,22 @@ const SearchResult = ({ query }) => {
 
   useEffect(() => {
     async function fetchData() {
-      if (!query.criteria || !query.value) {
+      if (
+        !query.keyword &&
+        !query.genre &&
+        !query.mediaType &&
+        !query.language &&
+        !query.year
+      ) {
         setMovies([]);
         return;
       }
 
-      const url = `/search-advanced?${query.criteria}=${query.value}`;
+      const url = `/search-advanced?keyword=${query.keyword || ""}&genre=${
+        query.genre || ""
+      }&mediaType=${query.mediaType || ""}&language=${
+        query.language || ""
+      }&year=${query.year || ""}`;
       try {
         const request = await axios.get(url);
         setMovies(request.data.results);

@@ -1,24 +1,45 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Nav from "../../components/browse/Nav";
 import SearchResult from "../../components/search/SearchResult";
 import "./Search.css";
 import AdvancedSearch from "../../components/search/AdvancedSearch";
-
+import axios from "../../utils/axios";
+import requests from "../../utils/requests";
 const Search = () => {
   const [query, setQuery] = useState("");
-  const [searchInput, setSearchInput] = useState("");
-  const [searchCriteria, setSearchCriteria] = useState("keyword"); // Tiêu chí mặc định
+  const [keyword, setKeyword] = useState("");
+  // const [searchCriteria, setSearchCriteria] = useState("keyword"); // Tiêu chí mặc định
+  const [genre, setGenre] = useState("");
+  const [mediaType, setMediaType] = useState("all");
+  const [language, setLanguage] = useState("");
+  const [year, setYear] = useState("");
+  const [genres, setGenres] = useState([]);
+
+  useEffect(() => {
+    async function fetchData() {
+      const request = await axios.get(requests.genre);
+      // console.log(axios, fetchUrl);
+      console.log(request.data);
+      setGenres(request.data);
+      return request;
+    }
+    fetchData();
+  }, []);
 
   const handleSearch = () => {
+    console.log(axios, query);
     setQuery({
-      criteria: searchCriteria,
-      value: searchInput,
+      keyword,
+      genre,
+      mediaType,
+      language,
+      year,
     });
   };
 
   const resetSearch = () => {
     setQuery("");
-    setSearchInput("");
+    setKeyword("");
   };
 
   return (
@@ -30,10 +51,10 @@ const Search = () => {
             <div className="basic-search">
               <div className="input-field">
                 <input
-                  type={searchCriteria === "year" ? "number" : "text"}
-                  placeholder={`Enter ${searchCriteria}`}
-                  onChange={(e) => setSearchInput(e.target.value)}
-                  value={searchInput}
+                  type="text"
+                  placeholder={`Enter keyword`}
+                  onChange={(e) => setKeyword(e.target.value)}
+                  value={keyword}
                 />
                 <div className="icon-wrap">
                   <svg
@@ -53,7 +74,7 @@ const Search = () => {
             </div>
             <div className="advance-search">
               <div className="row">
-                <label>
+                {/* <label>
                   <input
                     type="radio"
                     value="keyword"
@@ -97,7 +118,42 @@ const Search = () => {
                     onChange={(e) => setSearchCriteria(e.target.value)}
                   />
                   Year
-                </label>
+                </label> */}
+                <select
+                  value={genre}
+                  onChange={(e) => setGenre(e.target.value)}
+                >
+                  <option value="">All Genres</option>
+                  {genres.map((genre) => (
+                    <option key={genre.id} value={genre.id}>
+                      {genre.name}
+                    </option>
+                  ))}
+                </select>
+                <select
+                  value={mediaType}
+                  onChange={(e) => setMediaType(e.target.value)}
+                >
+                  <option value="all">All</option>
+                  <option value="movie">Movies</option>
+                  <option value="tv">TV Shows</option>
+                  <option value="person">Persons</option>
+                </select>
+                <select
+                  value={language}
+                  onChange={(e) => setLanguage(e.target.value)}
+                >
+                  <option value="">All Languages</option>
+                  <option value="en">English</option>
+                  <option value="ja">Japanese</option>
+                  <option value="ko">Korean</option>
+                </select>
+                <input
+                  type="number"
+                  placeholder="Year"
+                  value={year}
+                  onChange={(e) => setYear(e.target.value)}
+                />
               </div>
               <div className="row third">
                 <div className="input-field">
@@ -123,7 +179,7 @@ const Search = () => {
           </div>
         </form>
       </div>
-      <AdvancedSearch />
+      {/* <AdvancedSearch /> */}
       <SearchResult query={query} />
     </div>
   );

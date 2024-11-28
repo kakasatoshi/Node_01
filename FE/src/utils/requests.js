@@ -12,6 +12,8 @@ const requests = {
   fetchRomanceMovies: `/discover?genre=10749&page=1`,
   fetchDocumentaries: `/discover?genre=99&page=1`,
   fetchSearch: `/search`,
+  genre: `/genre`,
+  
 };
 
 export default requests;
