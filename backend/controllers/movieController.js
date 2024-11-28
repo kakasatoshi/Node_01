@@ -184,7 +184,7 @@ exports.getTopRatedMovies = (req, res, next) => {
 };
 
 exports.advancedSearch = (req, res, next) => {
-  const { keyword, genre, mediaType, language, year } = req.body;
+  const { keyword, genre, mediaType, language, year } = req.query;
 
   // Kiểm tra keyword (bắt buộc)
   if (!keyword || keyword.trim() === "") {
@@ -194,12 +194,18 @@ exports.advancedSearch = (req, res, next) => {
   // Lấy toàn bộ danh sách phim
   const allMovies = Movies.all();
 
-  // Tìm kiếm theo keyword (title hoặc overview, không phân biệt hoa thường)
-  let filteredMovies = allMovies.filter(
-      (movie) =>
-          movie.title.toLowerCase().includes(keyword.toLowerCase()) ||
-          (movie.overview && movie.overview.toLowerCase().includes(keyword.toLowerCase()))
-  );
+  // Tìm kiếm theo keyword (title, name hoặc overview)
+  let filteredMovies = allMovies.filter((movie) => {
+      const title = movie.title ? movie.title.toLowerCase() : "";
+      const name = movie.name ? movie.name.toLowerCase() : "";
+      const overview = movie.overview ? movie.overview.toLowerCase() : "";
+
+      return (
+          title.includes(keyword.toLowerCase()) ||
+          name.includes(keyword.toLowerCase()) ||
+          overview.includes(keyword.toLowerCase())
+      );
+  });
 
   // Lọc theo genre (nếu có)
   if (genre) {
@@ -240,3 +246,4 @@ exports.advancedSearch = (req, res, next) => {
       total_results: filteredMovies.length,
   });
 };
+

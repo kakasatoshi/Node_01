@@ -1,48 +1,47 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
+import axios from "../../utils/axios";
+import "./SearchResult.css";
 
-import axios from '../../utils/axios';
-import requests from '../../utils/requests';
+const base_url = "https://image.tmdb.org/t/p/original";
 
-import './SearchResult.css';
+const SearchResult = ({ query }) => {
+  const [movies, setMovies] = useState([]);
 
-const base_url = 'https://image.tmdb.org/t/p/original';
+  useEffect(() => {
+    async function fetchData() {
+      if (!query.criteria || !query.value) {
+        setMovies([]);
+        return;
+      }
 
-const SearchResult = ({query}) => {
-	const [movies, setMovies] = useState([]);
+      const url = `/search-advanced?${query.criteria}=${query.value}`;
+      try {
+        const request = await axios.get(url);
+        setMovies(request.data.results);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setMovies([]);
+      }
+    }
 
-	const url = `${requests.fetchSearch}&query=${query}`;
+    fetchData();
+  }, [query]);
 
-	useEffect(() => {
-		async function fetchData() {
-			const request = await axios.get(url);
-			setMovies(request.data.results);
-			return request;
-		}
-
-		if (query) {
-			fetchData();
-		} else {
-			setMovies([]);
-		}
-	}, [url, query]);
-
-	return(
-		<div className='row'>
-			<h2>Search Result</h2>
-			<div className='row_posters search-resul-container sc2'>
-				{movies.map((movie) => {
-					return (
-						<img
-							key={movie.id}
-							className={`row_poster row_posterLarge`}
-							src={`${base_url}${movie.poster_path}`}
-							alt={movie.name}
-						/>
-					);
-				})}
-			</div>
-		</div>
-	)
+  return (
+    <div className="row">
+      <h2>Search Result</h2>
+      <div className="row_posters search-resul-container sc2">
+        {movies.map((movie) => (
+          <img
+            key={movie.id}
+            className="row_poster row_posterLarge"
+            src={`${base_url}${movie.poster_path}`}
+            alt={movie.name || movie.title}
+          />
+        ))}
+      </div>
+    </div>
+  );
 };
 
 export default SearchResult;

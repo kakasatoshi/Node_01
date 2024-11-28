@@ -742,3 +742,6 @@ legend {
 	-ms-user-select: none;
 	user-select: none;
 }
+label{
+	color: #000;
+}
