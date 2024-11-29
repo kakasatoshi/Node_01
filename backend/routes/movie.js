@@ -15,7 +15,7 @@ router.get("/discover", movieController.discoverMoviesByGenre); //http://localho
 router.post("/video", movieController.getMovieTrailer); //http://localhost:5000/api/movie/video?film_id=361743
 router.get("/video", movieController.getMovieTrailer);
 router.get("/top-rate", movieController.getTopRatedMovies);
-router.post("/search", movieController.searchMovies); //http://localhost:5000/api/movie/search body {   "keyword": "top",    "page": 1,    "limit": 5}
+router.post("/search", authenticate, movieController.searchMovies); //http://localhost:5000/api/movie/search body {   "keyword": "top",    "page": 1,    "limit": 5}
 
 router.get("/search-advanced", movieController.advancedSearch);
 // router.get("/search-advanced", authenticate, movieController.advancedSearch);
